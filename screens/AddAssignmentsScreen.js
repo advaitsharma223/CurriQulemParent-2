@@ -10,10 +10,31 @@ export default class AddAssignmentsScreen extends React.Component{
     constructor() {
         super();
         this.state={
+            firstName: '',
+            lastName: '',
+            emailId: '',
             assignmentName: '',
             description: '',
-            dueTime: ''
+            dueTime: '',
+            subject: '',
+            seen: 'false'
         }
+    }
+
+    getTeacherDetailsForAssignment = ()=> {
+        var email = firebase.auth().currentUser.email;
+        db.collection('teachers').where('email_id', '==', email).get()
+        .then((snapshot)=>{
+            snapshot.forEach((doc)=>{
+                var data = doc.data();
+                this.setState({
+                    firstName: data.first_name,
+                    lastName: data.last_name,
+                    subject: data.subject,
+                    emailId: data.emailId
+                })
+            })
+        });
     }
 
     addAssignment = () => {
@@ -21,7 +42,12 @@ export default class AddAssignmentsScreen extends React.Component{
         db.collection('assignments').add({
             assignment_Name: this.state.assignmentName,
             description: this.state.description,
-            due_Time: this.state.dueTime
+            due_Time: this.state.dueTime,
+            subject: this.state.subject,
+            first_name: this.state.firstName,
+            last_name: this.state.lastName,
+            email_Id: this.state.emailId,
+            seen: this.state.seen
         })
     }
     
